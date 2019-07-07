@@ -24,3 +24,25 @@ class Item(Resource):
         connection.commit()
         connection.close()
         return {"message":"Item succesfully was made."}
+class ItemList(Resource):
+    def get(self):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        result = cursor.execute("SELECT * FROM items")
+        finall_response = []
+        for row in result:
+            finall_response.append({"name":row[1], "user_id":row[2]})
+        connection.commit()
+        connection.close()
+        return {"items":finall_response}
+class MyItems(Resource):
+    @jwt_required()
+    def get(self):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        result = cursor.execute("SELECT * FROM items WHERE user_id = ? ", (current_identity.id,))
+        connection.commit()
+        results = []
+        for row in result:
+            results.append({"name":row[1]})
+        return {"items":results}
