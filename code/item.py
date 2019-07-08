@@ -24,6 +24,21 @@ class Item(Resource):
         connection.commit()
         connection.close()
         return {"message":"Item succesfully was made."}
+    @jwt_required()
+    def put(self, name):
+        data = request.get_json()
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        result = cursor.execute("SELECT * FROM items WHERE name = ? AND user_id=?",(name,current_identity.id))
+        row = result.fetchone()
+        if row:
+            cursor.execute("UPDATE items SET name=? WHERE name =? AND user_id=?",(data["name"],name,current_identity.id))
+            connection.commit()
+            connection.close()
+            return {"message":"Item updated"}
+        else:
+            return {"message":"you don't have such an item."}
+
 class ItemList(Resource):
     def get(self):
         connection = sqlite3.connect("data.db")
