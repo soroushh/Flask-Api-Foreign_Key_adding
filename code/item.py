@@ -38,6 +38,19 @@ class Item(Resource):
             return {"message":"Item updated"}
         else:
             return {"message":"you don't have such an item."}
+    @jwt_required()
+    def delete(self,name):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        result = cursor.execute("SELECT * FROM items WHERE name=? AND user_id=? ",(name, current_identity.id))
+        row = result.fetchone()
+        if row:
+            cursor.execute("DELETE FROM items WHERE name=? AND user_id =?", (name,current_identity.id))
+            connection.commit()
+            connection.close()
+            return {"message": "item deleted successfully"}
+        else:
+            return {"message": "You don't have such an item."}
 
 class ItemList(Resource):
     def get(self):

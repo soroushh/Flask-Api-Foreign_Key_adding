@@ -3,7 +3,6 @@ from flask_restful import Api, Resource
 from flask_jwt import JWT, jwt_required
 from user import User
 from item import Item, ItemList, MyItems
-# from person import Person
 from security import authenticate, identify
 app = Flask(__name__)
 api = Api(app)
